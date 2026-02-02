@@ -1,1 +1,51 @@
-/* Add styles here */
+body {
+    padding-top: 56px; /* Adjust for fixed navbar */
+}
+
+.hero-section {
+    height: 70vh;
+    background-color: #495057;
+    background-size: cover;
+    background-position: center;
+}
+
+#about {
+    background-color: #f8f9fa;
+}
+
+.profile-pic-placeholder {
+    width: 250px;
+    height: 250px;
+    background-color: #e0e0e0;
+    border-radius: 50%;
+    border: 5px solid #fff;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+.portfolio-item-placeholder {
+    height: 200px;
+    background-color: #e0e0e0;
+}
+
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+#contact {
+    background-color: #343a40;
+    color: #fff;
+}
+
+#contact a.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+#contact a.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
