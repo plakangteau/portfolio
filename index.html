@@ -2,35 +2,85 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>술값 누가 낼래? - 최종 완성본</title>
+    <title>돌려돌려 돌림판</title>
     <style>
-        body { font-family: 'Arial', sans-serif; text-align: center; background-color: #fef9e7; margin-top: 50px; overflow-x: hidden; }
-        h1 { color: #e91e63; font-size: 3.5rem; margin-bottom: 80px; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
-        #wheel-container { position: relative; width: 440px; height: 440px; margin: 0 auto; }
-        canvas { border-radius: 50%; border: none; display: block; }
-        #arrow {
-            position: absolute; top: -30px; left: 50%; transform: translateX(-50%);
-            width: 0; height: 0; border-left: 25px solid transparent;
-            border-right: 25px solid transparent; border-top: 50px solid #333; z-index: 10;
+        body { font-family: 'Malgun Gothic', sans-serif; text-align: center; background-color: #EBEBE1; margin-top: 50px; overflow: hidden; }
+        h1 { color: #3D2B1F; font-size: 3.5rem; margin-bottom: 50px; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
+        
+        #character-container {
+            position: absolute;
+            top: 280px;
+            left: calc(50% - 450px);
+            width: 150px;
+            height: 200px;
+            z-index: 20;
         }
-        .controls { margin-top: 50px; background: white; display: inline-block; padding: 30px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        input[type="text"] { padding: 10px; margin: 5px; border: 2px solid #eee; border-radius: 8px; width: 90px; font-weight: bold; }
-        input[type="number"] { padding: 8px; width: 50px; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem; }
+        #archer { filter: drop-shadow(3px 3px 5px rgba(0,0,0,0.3)); }
+        #fired-arrow {
+            position: absolute;
+            top: 75px; 
+            left: 20px;
+            opacity: 0;
+            transition: all 0.3s ease-out;
+            z-index: 30;
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.4));
+            transform-origin: 0% 50%;
+        }
+
+        @keyframes shoot-arrow {
+            0% {
+                opacity: 1;
+                transform: translate(0px, 0px) rotate(-35deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(360px, -200px) rotate(-10deg);
+            }
+        }
+
+        .arrow-animation {
+            animation: shoot-arrow 0.3s cubic-bezier(0.6, -0.28, 0.74, 0.05) forwards;
+        }
+
+        #wheel-container { position: relative; width: 460px; height: 460px; margin: 0 auto; }
+        canvas { 
+            border-radius: 50%; 
+            border: 15px solid #8C6D53;
+            box-shadow: 0 0 0 5px #BFA78E, 0 0 25px rgba(0,0,0,0.4);
+            display: block; 
+        }
+        .controls { margin-top: 40px; background: #D3DCD4; display: inline-block; padding: 30px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        input[type="text"] { padding: 10px; margin: 5px; border: 2px solid #BFA78E; border-radius: 8px; width: 90px; font-weight: bold; background-color: #EBEBE1; }
+        input[type="number"] { padding: 8px; width: 50px; border-radius: 8px; border: 1px solid #BFA78E; font-size: 1rem; background-color: #EBEBE1;}
         button {
-            background-color: #e91e63; color: white; border: none; padding: 18px 40px;
+            background-color: #755B48;
+            color: #EBEBE1; 
+            border: none; 
+            padding: 18px 40px;
             font-size: 1.4rem; font-weight: bold; border-radius: 50px; cursor: pointer;
-            transition: all 0.2s; margin-top: 25px; box-shadow: 0 4px 0 #c2185b;
+            transition: all 0.2s; margin-top: 25px; 
+            box-shadow: 0 4px 0 #543E2E;
         }
         button:active { transform: translateY(3px); box-shadow: none; }
-        #sound-notice { font-size: 0.9rem; color: #888; margin-top: 10px; }
+        #sound-notice { font-size: 0.9rem; color: #3D2B1F; margin-top: 10px; }
     </style>
 </head>
 <body onclick="initAudio()">
 
-    <h1>술값 누가 낼래?</h1>
+    <h1>돌려돌려 돌림판</h1>
+
+    <div id="character-container">
+        <svg id="archer" width="150" height="200" viewBox="0 0 150 200">
+            <path d="M75,10 L90,2 L100,12 L90,100 L105,180 L80,195 L55,180 L70,100 L75,10 Z" fill="#3D2B1F" stroke="#2B1D1A" stroke-width="1"></path>
+            <path d="M78,15 C-20,100 78,185" stroke="#6F4E37" stroke-width="10" fill="none" stroke-linecap="round"></path>
+        </svg>
+        <svg id="fired-arrow" width="100" height="20" viewBox="0 0 100 20">
+            <line x1="0" y1="10" x2="90" y2="10" stroke="#543E2E" stroke-width="5" stroke-linecap="round"></line>
+            <path d="M85,4 L98,10 L85,16 Z" fill="#3D2B1F"></path>
+        </svg>
+    </div>
 
     <div id="wheel-container">
-        <div id="arrow"></div>
         <canvas id="wheel" width="440" height="440"></canvas>
     </div>
 
@@ -46,19 +96,24 @@
     <audio id="bgm" loop preload="auto"><source src="https://assets.mixkit.co/music/preview/mixkit-circus-theme-playful-56.mp3" type="audio/mpeg"></audio>
     <audio id="drumroll" preload="auto"><source src="https://www.soundjay.com/misc/sounds/drum-roll-01.mp3" type="audio/mpeg"></audio>
     <audio id="fanfare" preload="auto"><source src="https://assets.mixkit.co/sfx/preview/mixkit-stadium-crowd-clapping-and-cheering-463.mp3" type="audio/mpeg"></audio>
+    <audio id="arrow-thud" preload="auto"><source src="https://cdn.pixabay.com/download/audio/2022/03/10/audio_16cc3b1a5a.mp3" type="audio/mpeg"></audio>
 
     <script>
         const canvas = document.getElementById('wheel');
         const ctx = canvas.getContext('2d');
-        const colors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40", "#8BC34A", "#F44336", "#FFCDD2", "#00BCD4"];
+        const colors = ["#7DB994", "#A9C6B2", "#D3DCD4", "#BFA78E", "#8C6D53", "#594536", "#A18C7B", "#C8BBAE"];
         
         let currentAngle = 0;
         let isSpinning = false;
         let audioInitialized = false;
 
-        // 브라우저 소리 잠금 해제
         function initAudio() {
             if (!audioInitialized) {
+                document.querySelectorAll('audio').forEach(audio => {
+                    audio.play().catch(() => {});
+                    audio.pause();
+                    audio.currentTime = 0;
+                });
                 const bgm = document.getElementById('bgm');
                 bgm.volume = 0.4;
                 bgm.play().catch(() => {});
@@ -90,13 +145,14 @@
             const centerY = canvas.height / 2;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const radius = 220;
 
             names.forEach((name, i) => {
                 const angle = currentAngle + (i * arcSize);
                 ctx.beginPath();
                 ctx.fillStyle = colors[i % colors.length];
                 ctx.moveTo(centerX, centerY);
-                ctx.arc(centerX, centerY, 215, angle, angle + arcSize);
+                ctx.arc(centerX, centerY, radius, angle, angle + arcSize);
                 ctx.fill();
 
                 ctx.save();
@@ -104,16 +160,16 @@
                 let textAngle = angle + arcSize / 2;
                 ctx.rotate(textAngle);
                 ctx.textAlign = "center";
-                ctx.fillStyle = "#fff";
-                ctx.font = "bold 20px Arial";
+                ctx.fillStyle = "#000";
+                ctx.font = "bold 18px Malgun Gothic";
 
                 const checkAngle = (textAngle % (2 * Math.PI) + (2 * Math.PI)) % (2 * Math.PI);
                 if (checkAngle > Math.PI / 2 && checkAngle < (Math.PI * 3) / 2) {
-                    ctx.translate(140, 0);
+                    ctx.translate(radius / 1.6, 0);
                     ctx.rotate(Math.PI);
                     ctx.fillText(name, 0, 5);
                 } else {
-                    ctx.fillText(name, 140, 5);
+                    ctx.fillText(name, radius / 1.6, 5);
                 }
                 ctx.restore();
             });
@@ -122,18 +178,20 @@
         function spinWheel() {
             if (isSpinning) return;
             
-            // 소리 재생 권한 강제 획득
             const bgm = document.getElementById('bgm');
             const drum = document.getElementById('drumroll');
-            const fanfare = document.getElementById('fanfare');
             
             bgm.volume = 0.1;
             drum.currentTime = 0;
             drum.play().catch(() => {});
 
             isSpinning = true;
-            const spinAngle = Math.random() * 360 + 1800;
-            const duration = 4000; 
+            document.getElementById('spin-btn').disabled = true;
+            document.getElementById('spin-btn').style.cursor = 'not-allowed';
+
+
+            const spinAngle = Math.random() * 360 + 2500;
+            const duration = 5000; 
             const start = performance.now();
             const startAngle = currentAngle;
 
@@ -161,17 +219,25 @@
             const names = Array.from(document.getElementsByClassName('name-field')).map(i => i.value || '??');
             const numSegments = names.length;
             const arcSize = (2 * Math.PI) / numSegments;
-            const normalizedAngle = (currentAngle % (2 * Math.PI) + (2 * Math.PI)) % (2 * Math.PI);
-            const arrowAngle = (Math.PI * 1.5); 
             
-            let winnerIndex = Math.floor(((arrowAngle - normalizedAngle + (2 * Math.PI)) % (2 * Math.PI)) / arcSize);
+            const pointerAngle = (Math.PI * 1.5);
+            const finalAngle = (currentAngle % (2 * Math.PI) + (2 * Math.PI)) % (2 * Math.PI);
+
+            let winnerIndex = Math.floor(((pointerAngle - finalAngle + (2 * Math.PI)) % (2 * Math.PI)) / arcSize);
             const winnerName = names[winnerIndex];
             
-            document.getElementById('fanfare').play().catch(() => {});
-            
+            const arrow = document.getElementById('fired-arrow');
+            arrow.classList.add('arrow-animation');
+            document.getElementById('arrow-thud').play().catch(()=>{});
+
             setTimeout(() => {
+                document.getElementById('fanfare').play().catch(() => {});
                 alert(`🎊 [${winnerName}] 님 당첨! 🎊\n잘먹을게요~~!`);
-            }, 200);
+                
+                document.getElementById('spin-btn').disabled = false;
+                document.getElementById('spin-btn').style.cursor = 'pointer';
+                arrow.classList.remove('arrow-animation');
+            }, 500);
         }
 
         window.onload = createInputs;
