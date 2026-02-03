@@ -2,290 +2,108 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>돌려돌려 돌림판</title>
-    <style>
-        body { 
-            font-family: 'Malgun Gothic', sans-serif; 
-            background-color: #EBEBE1; 
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        h1 { 
-            color: #3D2B1F; 
-            font-size: 3.5rem; 
-            margin-bottom: 20px; 
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
-        }
-
-        .main-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 50px;
-            flex-wrap: wrap;
-        }
-
-        #character-container {
-            position: relative;
-            width: 150px;
-            height: 220px;
-        }
-        #archer { 
-            width: 100%;
-            height: 100%;
-            filter: drop-shadow(3px 3px 5px rgba(0,0,0,0.3)); 
-        }
-        #fired-arrow {
-            position: absolute;
-            top: 90px; 
-            left: 25px;
-            width: 100px;
-            height: 20px;
-            opacity: 0;
-            z-index: 30;
-            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.4));
-            transform-origin: 0% 50%;
-        }
-
-        .game-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        @keyframes shoot-arrow {
-            0% {
-                opacity: 1;
-                transform: translate(0px, 0px) rotate(-40deg);
-            }
-            100% {
-                opacity: 1;
-                transform: translate(290px, -125px) rotate(-15deg);
-            }
-        }
-
-        .arrow-animation {
-            animation: shoot-arrow 0.3s cubic-bezier(0.6, -0.28, 0.74, 0.05) forwards;
-        }
-
-        #wheel-container { 
-            position: relative; 
-            width: 460px; 
-            height: 460px; 
-        }
-        canvas { 
-            border-radius: 50%; 
-            border: 15px solid #8C6D53;
-            box-shadow: 0 0 0 5px #BFA78E, 0 0 25px rgba(0,0,0,0.4);
-            display: block; 
-        }
-        .controls { 
-            margin-top: 20px; 
-            background: #D3DCD4; 
-            padding: 20px; 
-            border-radius: 20px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
-            text-align: center;
-        }
-        input[type="text"] { padding: 10px; margin: 5px; border: 2px solid #BFA78E; border-radius: 8px; width: 90px; font-weight: bold; background-color: #EBEBE1; }
-        input[type="number"] { padding: 8px; width: 50px; border-radius: 8px; border: 1px solid #BFA78E; font-size: 1rem; background-color: #EBEBE1;}
-        button {
-            background-color: #755B48;
-            color: #EBEBE1; 
-            border: none; 
-            padding: 15px 35px;
-            font-size: 1.3rem; font-weight: bold; border-radius: 50px; cursor: pointer;
-            transition: all 0.2s; margin-top: 15px; 
-            box-shadow: 0 4px 0 #543E2E;
-        }
-        button:active { transform: translateY(3px); box-shadow: none; }
-        #sound-notice { font-size: 0.9rem; color: #3D2B1F; margin-top: 10px; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>웹디자이너 포트폴리오</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
-<body onclick="initAudio()">
+<body>
 
-    <h1>돌려돌려 돌림판</h1>
-
-    <div class="main-container">
-        <div id="character-container">
-            <svg id="archer" viewBox="0 0 150 220">
-                <path d="M65,30 Q80,0 95,30 L90,40 L70,40 Z" fill="#4a3c31" stroke="#2B1D1A" stroke-width="2"></path>
-                <path d="M60,40 L100,40 L110,120 L95,200 L65,200 L50,120 Z" fill="#3D2B1F" stroke="#2B1D1A" stroke-width="2"></path>
-                <path d="M80,45 C-20,110 80,210" stroke="#6F4E37" stroke-width="12" fill="none" stroke-linecap="round"></path>
-            </svg>
-            <svg id="fired-arrow" viewBox="0 0 100 20">
-                <line x1="0" y1="10" x2="90" y2="10" stroke="#543E2E" stroke-width="5" stroke-linecap="round"></line>
-                <path d="M85,4 L98,10 L85,16 Z" fill="#3D2B1F"></path>
-            </svg>
-        </div>
-
-        <div class="game-container">
-            <div id="wheel-container">
-                <canvas id="wheel" width="440" height="440"></canvas>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">내 포트폴리오</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#about">소개</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#portfolio">포트폴리오</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">연락처</a></li>
+                </ul>
             </div>
-            <div class="controls">
-                <div style="margin-bottom: 15px; font-size: 1.1rem; font-weight: bold;">
-                    인원수: <input type="number" id="member-count" value="4" min="2" max="10" onchange="createInputs()"> 명
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-section text-center text-white d-flex justify-content-center align-items-center">
+        <div class="container">
+            <h1>안녕하세요, [이름]입니다.</h1>
+            <p class="lead">사용자 중심의 직관적인 웹을 디자인합니다.</p>
+        </div>
+    </header>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h2 class="mb-4">소개</h2>
+                    <p>이곳에 자기소개를 작성하세요. 웹디자이너로서의 철학, 강점, 그리고 경험에 대해 자유롭게 이야기할 수 있습니다. 어떤 종류의 프로젝트에 관심이 있는지, 어떤 기술을 사용하는지 등을 포함하면 좋습니다.</p>
                 </div>
-                <div id="name-inputs"></div>
-                <button id="spin-btn" onclick="spinWheel()">시작!</button>
-                <p id="sound-notice">🔈 소리가 안 나면 화면 아무 곳이나 클릭해 주세요!</p>
+                <div class="col-lg-6 d-flex align-items-center justify-content-center">
+                    <!-- 이곳에 프로필 사진을 넣을 수 있습니다 -->
+                    <div class="profile-pic-placeholder"></div>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <audio id="bgm" loop preload="auto"><source src="https://assets.mixkit.co/music/preview/mixkit-circus-theme-playful-56.mp3" type="audio/mpeg"></audio>
-    <audio id="drumroll" preload="auto"><source src="https://www.soundjay.com/misc/sounds/drum-roll-01.mp3" type="audio/mpeg"></audio>
-    <audio id="fanfare" preload="auto"><source src="https://assets.mixkit.co/sfx/preview/mixkit-stadium-crowd-clapping-and-cheering-463.mp3" type="audio/mpeg"></audio>
-    <audio id="arrow-thud" preload="auto"><source src="https://cdn.pixabay.com/download/audio/2022/03/10/audio_16cc3b1a5a.mp3" type="audio/mpeg"></audio>
+    <!-- Portfolio Section -->
+    <section id="portfolio">
+        <div class="container">
+            <h2 class="text-center mb-5">포트폴리오</h2>
+            <div class="row">
+                <!-- Portfolio Item 1 -->
+                <div class="col-md-4 mb-4 portfolio-item">
+                    <div class="card">
+                        <div class="portfolio-item-placeholder"></div>
+                        <div class="card-body">
+                            <h5 class="card-title">프로젝트 1</h5>
+                            <p class="card-text">프로젝트에 대한 간단한 설명입니다.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Portfolio Item 2 -->
+                <div class="col-md-4 mb-4 portfolio-item">
+                    <div class="card">
+                        <div class="portfolio-item-placeholder"></div>
+                        <div class="card-body">
+                            <h5 class="card-title">프로젝트 2</h5>
+                            <p class="card-text">프로젝트에 대한 간단한 설명입니다.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Portfolio Item 3 -->
+                <div class="col-md-4 mb-4 portfolio-item">
+                    <div class="card">
+                        <div class="portfolio-item-placeholder"></div>
+                        <div class="card-body">
+                            <h5 class="card-title">프로젝트 3</h5>
+                            <p class="card-text">프로젝트에 대한 간단한 설명입니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <script>
-        const canvas = document.getElementById('wheel');
-        const ctx = canvas.getContext('2d');
-        const colors = ["#7DB994", "#A9C6B2", "#D3DCD4", "#BFA78E", "#8C6D53", "#594536", "#A18C7B", "#C8BBAE"];
-        
-        let currentAngle = 0;
-        let isSpinning = false;
-        let audioInitialized = false;
+    <!-- Contact Section -->
+    <section id="contact">
+        <div class="container text-center">
+            <h2>연락처</h2>
+            <p class="lead">아래 이메일로 연락주세요.</p>
+            <a href="mailto:your-email@example.com" class="btn btn-primary btn-lg">your-email@example.com</a>
+        </div>
+    </section>
 
-        function initAudio() {
-            if (!audioInitialized) {
-                document.querySelectorAll('audio').forEach(audio => {
-                    audio.play().catch(() => {});
-                    audio.pause();
-                    audio.currentTime = 0;
-                });
-                const bgm = document.getElementById('bgm');
-                bgm.volume = 0.4;
-                bgm.play().catch(() => {});
-                document.getElementById('sound-notice').innerText = "✅ 사운드 활성화됨";
-                audioInitialized = true;
-            }
-        }
+    <!-- Footer -->
+    <footer class="text-white text-center py-3">
+        <p>&copy; 2026 내 포트폴리오. All Rights Reserved.</p>
+    </footer>
 
-        function createInputs() {
-            const count = document.getElementById('member-count').value;
-            const container = document.getElementById('name-inputs');
-            container.innerHTML = '';
-            for (let i = 0; i < count; i++) {
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.value = `사람${i+1}`;
-                input.className = 'name-field';
-                input.oninput = drawWheel;
-                container.appendChild(input);
-            }
-            setTimeout(drawWheel, 0);
-        }
-
-        function drawWheel() {
-            const names = Array.from(document.getElementsByClassName('name-field')).map(i => i.value || '??');
-            const numSegments = names.length;
-            const arcSize = (2 * Math.PI) / numSegments;
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const radius = 220;
-
-            names.forEach((name, i) => {
-                const angle = currentAngle + (i * arcSize);
-                ctx.beginPath();
-                ctx.fillStyle = colors[i % colors.length];
-                ctx.moveTo(centerX, centerY);
-                ctx.arc(centerX, centerY, radius, angle, angle + arcSize);
-                ctx.fill();
-
-                ctx.save();
-                ctx.translate(centerX, centerY);
-                let textAngle = angle + arcSize / 2;
-                ctx.rotate(textAngle);
-                ctx.textAlign = "center";
-                ctx.fillStyle = "#000";
-                ctx.font = "bold 18px Malgun Gothic";
-
-                const checkAngle = (textAngle % (2 * Math.PI) + (2 * Math.PI)) % (2 * Math.PI);
-                if (checkAngle > Math.PI / 2 && checkAngle < (Math.PI * 3) / 2) {
-                    ctx.translate(radius / 1.6, 0);
-                    ctx.rotate(Math.PI);
-                    ctx.fillText(name, 0, 5);
-                } else {
-                    ctx.fillText(name, radius / 1.6, 5);
-                }
-                ctx.restore();
-            });
-        }
-
-        function spinWheel() {
-            if (isSpinning) return; 
-            
-            const bgm = document.getElementById('bgm');
-            const drum = document.getElementById('drumroll');
-            
-            bgm.volume = 0.1;
-            drum.currentTime = 0;
-            drum.play().catch(() => {});
-
-            isSpinning = true;
-            document.getElementById('spin-btn').disabled = true;
-            document.getElementById('spin-btn').style.cursor = 'not-allowed';
-
-
-            const spinAngle = Math.random() * 360 + 2500;
-            const duration = 5000; 
-            const start = performance.now();
-            const startAngle = currentAngle;
-
-            function animate(time) {
-                const elapsed = time - start;
-                const progress = Math.min(elapsed / duration, 1);
-                const easeOut = 1 - Math.pow(1 - progress, 4);
-                
-                currentAngle = startAngle + (spinAngle * (Math.PI / 180) * easeOut);
-                drawWheel();
-
-                if (progress < 1) {
-                    requestAnimationFrame(animate);
-                } else {
-                    isSpinning = false;
-                    drum.pause();
-                    bgm.volume = 0.4;
-                    determineWinner();
-                }
-            }
-            requestAnimationFrame(animate);
-        }
-
-        function determineWinner() {
-            const names = Array.from(document.getElementsByClassName('name-field')).map(i => i.value || '??');
-            const numSegments = names.length;
-            const arcSize = (2 * Math.PI) / numSegments;
-            
-            const pointerAngle = (Math.PI * 1.5);
-            const finalAngle = (currentAngle % (2 * Math.PI) + (2 * Math.PI)) % (2 * Math.PI);
-
-            let winnerIndex = Math.floor(((pointerAngle - finalAngle + (2 * Math.PI)) % (2 * Math.PI)) / arcSize);
-            const winnerName = names[winnerIndex];
-            
-            const arrow = document.getElementById('fired-arrow');
-            arrow.classList.add('arrow-animation');
-            document.getElementById('arrow-thud').play().catch(()=>{});
-
-            setTimeout(() => {
-                document.getElementById('fanfare').play().catch(() => {});
-                alert(`🎊 [${winnerName}] 님 당첨! 🎊\n잘먹을게요~~!`);
-                
-                document.getElementById('spin-btn').disabled = false;
-                document.getElementById('spin-btn').style.cursor = 'pointer';
-                arrow.classList.remove('arrow-animation');
-            }, 500);
-        }
-
-        window.onload = createInputs;
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>
