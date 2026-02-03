@@ -2,108 +2,179 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>웹디자이너 포트폴리오</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <title>술값 누가 낼래? - 최종 완성본</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; text-align: center; background-color: #fef9e7; margin-top: 50px; overflow-x: hidden; }
+        h1 { color: #e91e63; font-size: 3.5rem; margin-bottom: 80px; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
+        #wheel-container { position: relative; width: 440px; height: 440px; margin: 0 auto; }
+        canvas { border-radius: 50%; border: none; display: block; }
+        #arrow {
+            position: absolute; top: -30px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 0; border-left: 25px solid transparent;
+            border-right: 25px solid transparent; border-top: 50px solid #333; z-index: 10;
+        }
+        .controls { margin-top: 50px; background: white; display: inline-block; padding: 30px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        input[type="text"] { padding: 10px; margin: 5px; border: 2px solid #eee; border-radius: 8px; width: 90px; font-weight: bold; }
+        input[type="number"] { padding: 8px; width: 50px; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem; }
+        button {
+            background-color: #e91e63; color: white; border: none; padding: 18px 40px;
+            font-size: 1.4rem; font-weight: bold; border-radius: 50px; cursor: pointer;
+            transition: all 0.2s; margin-top: 25px; box-shadow: 0 4px 0 #c2185b;
+        }
+        button:active { transform: translateY(3px); box-shadow: none; }
+        #sound-notice { font-size: 0.9rem; color: #888; margin-top: 10px; }
+    </style>
 </head>
-<body>
+<body onclick="initAudio()">
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="#">내 포트폴리오</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarResponsive">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="#about">소개</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#portfolio">포트폴리오</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#contact">연락처</a></li>
-                </ul>
-            </div>
+    <h1>술값 누가 낼래?</h1>
+
+    <div id="wheel-container">
+        <div id="arrow"></div>
+        <canvas id="wheel" width="440" height="440"></canvas>
+    </div>
+
+    <div class="controls">
+        <div style="margin-bottom: 20px; font-size: 1.1rem; font-weight: bold;">
+            인원수: <input type="number" id="member-count" value="4" min="2" max="10" onchange="createInputs()"> 명
         </div>
-    </nav>
+        <div id="name-inputs"></div>
+        <button id="spin-btn" onclick="spinWheel()">돌려 돌려 돌림판!</button>
+        <p id="sound-notice">🔈 소리가 안 나면 화면 아무 곳이나 클릭해 주세요!</p>
+    </div>
 
-    <!-- Hero Section -->
-    <header class="hero-section text-center text-white d-flex justify-content-center align-items-center">
-        <div class="container">
-            <h1>안녕하세요, [이름]입니다.</h1>
-            <p class="lead">사용자 중심의 직관적인 웹을 디자인합니다.</p>
-        </div>
-    </header>
+    <audio id="bgm" loop preload="auto"><source src="https://assets.mixkit.co/music/preview/mixkit-circus-theme-playful-56.mp3" type="audio/mpeg"></audio>
+    <audio id="drumroll" preload="auto"><source src="https://www.soundjay.com/misc/sounds/drum-roll-01.mp3" type="audio/mpeg"></audio>
+    <audio id="fanfare" preload="auto"><source src="https://assets.mixkit.co/sfx/preview/mixkit-stadium-crowd-clapping-and-cheering-463.mp3" type="audio/mpeg"></audio>
 
-    <!-- About Section -->
-    <section id="about">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <h2 class="mb-4">소개</h2>
-                    <p>이곳에 자기소개를 작성하세요. 웹디자이너로서의 철학, 강점, 그리고 경험에 대해 자유롭게 이야기할 수 있습니다. 어떤 종류의 프로젝트에 관심이 있는지, 어떤 기술을 사용하는지 등을 포함하면 좋습니다.</p>
-                </div>
-                <div class="col-lg-6 d-flex align-items-center justify-content-center">
-                    <!-- 이곳에 프로필 사진을 넣을 수 있습니다 -->
-                    <div class="profile-pic-placeholder"></div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <script>
+        const canvas = document.getElementById('wheel');
+        const ctx = canvas.getContext('2d');
+        const colors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40", "#8BC34A", "#F44336", "#FFCDD2", "#00BCD4"];
+        
+        let currentAngle = 0;
+        let isSpinning = false;
+        let audioInitialized = false;
 
-    <!-- Portfolio Section -->
-    <section id="portfolio">
-        <div class="container">
-            <h2 class="text-center mb-5">포트폴리오</h2>
-            <div class="row">
-                <!-- Portfolio Item 1 -->
-                <div class="col-md-4 mb-4 portfolio-item">
-                    <div class="card">
-                        <div class="portfolio-item-placeholder"></div>
-                        <div class="card-body">
-                            <h5 class="card-title">프로젝트 1</h5>
-                            <p class="card-text">프로젝트에 대한 간단한 설명입니다.</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Portfolio Item 2 -->
-                <div class="col-md-4 mb-4 portfolio-item">
-                    <div class="card">
-                        <div class="portfolio-item-placeholder"></div>
-                        <div class="card-body">
-                            <h5 class="card-title">프로젝트 2</h5>
-                            <p class="card-text">프로젝트에 대한 간단한 설명입니다.</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Portfolio Item 3 -->
-                <div class="col-md-4 mb-4 portfolio-item">
-                    <div class="card">
-                        <div class="portfolio-item-placeholder"></div>
-                        <div class="card-body">
-                            <h5 class="card-title">프로젝트 3</h5>
-                            <p class="card-text">프로젝트에 대한 간단한 설명입니다.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+        // 브라우저 소리 잠금 해제
+        function initAudio() {
+            if (!audioInitialized) {
+                const bgm = document.getElementById('bgm');
+                bgm.volume = 0.4;
+                bgm.play().catch(() => {});
+                document.getElementById('sound-notice').innerText = "✅ 사운드 활성화됨";
+                audioInitialized = true;
+            }
+        }
 
-    <!-- Contact Section -->
-    <section id="contact">
-        <div class="container text-center">
-            <h2>연락처</h2>
-            <p class="lead">아래 이메일로 연락주세요.</p>
-            <a href="mailto:your-email@example.com" class="btn btn-primary btn-lg">your-email@example.com</a>
-        </div>
-    </section>
+        function createInputs() {
+            const count = document.getElementById('member-count').value;
+            const container = document.getElementById('name-inputs');
+            container.innerHTML = '';
+            for (let i = 0; i < count; i++) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = `사람${i+1}`;
+                input.className = 'name-field';
+                input.oninput = drawWheel;
+                container.appendChild(input);
+            }
+            setTimeout(drawWheel, 0);
+        }
 
-    <!-- Footer -->
-    <footer class="text-white text-center py-3">
-        <p>&copy; 2026 내 포트폴리오. All Rights Reserved.</p>
-    </footer>
+        function drawWheel() {
+            const names = Array.from(document.getElementsByClassName('name-field')).map(i => i.value || '??');
+            const numSegments = names.length;
+            const arcSize = (2 * Math.PI) / numSegments;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="main.js"></script>
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            names.forEach((name, i) => {
+                const angle = currentAngle + (i * arcSize);
+                ctx.beginPath();
+                ctx.fillStyle = colors[i % colors.length];
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, 215, angle, angle + arcSize);
+                ctx.fill();
+
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                let textAngle = angle + arcSize / 2;
+                ctx.rotate(textAngle);
+                ctx.textAlign = "center";
+                ctx.fillStyle = "#fff";
+                ctx.font = "bold 20px Arial";
+
+                const checkAngle = (textAngle % (2 * Math.PI) + (2 * Math.PI)) % (2 * Math.PI);
+                if (checkAngle > Math.PI / 2 && checkAngle < (Math.PI * 3) / 2) {
+                    ctx.translate(140, 0);
+                    ctx.rotate(Math.PI);
+                    ctx.fillText(name, 0, 5);
+                } else {
+                    ctx.fillText(name, 140, 5);
+                }
+                ctx.restore();
+            });
+        }
+
+        function spinWheel() {
+            if (isSpinning) return;
+            
+            // 소리 재생 권한 강제 획득
+            const bgm = document.getElementById('bgm');
+            const drum = document.getElementById('drumroll');
+            const fanfare = document.getElementById('fanfare');
+            
+            bgm.volume = 0.1;
+            drum.currentTime = 0;
+            drum.play().catch(() => {});
+
+            isSpinning = true;
+            const spinAngle = Math.random() * 360 + 1800;
+            const duration = 4000; 
+            const start = performance.now();
+            const startAngle = currentAngle;
+
+            function animate(time) {
+                const elapsed = time - start;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeOut = 1 - Math.pow(1 - progress, 4);
+                
+                currentAngle = startAngle + (spinAngle * (Math.PI / 180) * easeOut);
+                drawWheel();
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    isSpinning = false;
+                    drum.pause();
+                    bgm.volume = 0.4;
+                    determineWinner();
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        function determineWinner() {
+            const names = Array.from(document.getElementsByClassName('name-field')).map(i => i.value || '??');
+            const numSegments = names.length;
+            const arcSize = (2 * Math.PI) / numSegments;
+            const normalizedAngle = (currentAngle % (2 * Math.PI) + (2 * Math.PI)) % (2 * Math.PI);
+            const arrowAngle = (Math.PI * 1.5); 
+            
+            let winnerIndex = Math.floor(((arrowAngle - normalizedAngle + (2 * Math.PI)) % (2 * Math.PI)) / arcSize);
+            const winnerName = names[winnerIndex];
+            
+            document.getElementById('fanfare').play().catch(() => {});
+            
+            setTimeout(() => {
+                alert(`🎊 [${winnerName}] 님 당첨! 🎊\n잘먹을게요~~!`);
+            }, 200);
+        }
+
+        window.onload = createInputs;
+    </script>
 </body>
 </html>
