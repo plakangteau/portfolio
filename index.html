@@ -91,10 +91,30 @@
 
     <!-- Contact Section -->
     <section id="contact">
-        <div class="container text-center">
-            <h2>연락처</h2>
-            <p class="lead">아래 이메일로 연락주세요.</p>
-            <a href="mailto:your-email@example.com" class="btn btn-primary btn-lg">your-email@example.com</a>
+        <div class="container">
+            <h2 class="text-center mb-4">제휴 문의</h2>
+            <p class="lead text-center mb-5">아래 폼을 작성하여 문의해 주세요.</p>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <form action="https://formspree.io/f/xqelobra" method="POST">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">이름</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">이메일 주소</label>
+                            <input type="email" class="form-control" id="email" name="_replyto" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">메시지</label>
+                            <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg mt-3">문의 보내기</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </section>
 
